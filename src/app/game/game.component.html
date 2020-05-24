@@ -1,6 +1,15 @@
 <div>
     <h2>Current Game</h2>
-
+    <div class="choices">
+        <button (click)="setPlayer(1)" 
+        class="single-choice" type="button">
+            start new game with X
+        </button>
+        <button (click)="setPlayer(-1)" 
+        class="single-choice" type="button">
+            start new game with O
+        </button>
+    </div>
     <div *ngFor="let row of [0,1,2]" class="row">
         <div 
             *ngFor="let col of [0,1,2]" 
@@ -9,5 +18,8 @@
             >
             {{this.gameDisplay[3*row+col]}}
         </div>
+    </div>
+    <div class="Result">
+        <h2>The Current Game Result is {{this.game.gameResult}}</h2>
     </div>
 </div>
