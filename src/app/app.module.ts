@@ -11,7 +11,8 @@ import { HttpClientModule }    from '@angular/common/http';
     GameComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
