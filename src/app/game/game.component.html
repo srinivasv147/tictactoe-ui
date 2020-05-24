@@ -2,6 +2,12 @@
     <h2>Current Game</h2>
 
     <div *ngFor="let row of [0,1,2]" class="row">
-        <div *ngFor="let col of [0,1,2]" class="block"></div>
+        <div 
+            *ngFor="let col of [0,1,2]" 
+            class="block"
+            (click)="registerMove(3*row+col)"
+            >
+            {{this.gameDisplay[3*row+col]}}
+        </div>
     </div>
 </div>
