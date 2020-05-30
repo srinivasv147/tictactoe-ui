@@ -10,7 +10,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 })
 export class GameService {
 
-  private getUrl: string = "http://127.0.0.1:8080/game/";
+  private getUrl: string = "http://localhost:8080/game/";
 
   getGame(game: number[]): Observable<GameDTO> {
     return this.http.get<GameDTO>(this.getUrl+game)

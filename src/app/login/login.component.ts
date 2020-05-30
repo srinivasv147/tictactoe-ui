@@ -2,6 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from "angularx-social-login";
 import { GoogleLoginProvider } from "angularx-social-login";
 import { SocialUser } from "angularx-social-login";
+import { LoginService } from '../login.service';
+import { LoginResDTO } from '../login-res-dto';
+import { Router } from "@angular/router";
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-login',
@@ -10,12 +14,34 @@ import { SocialUser } from "angularx-social-login";
 })
 export class LoginComponent implements OnInit {
 
-  loginResult: string
+  loginResult: string;
+  loginSuccess: boolean = true;
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService
+    , private loginService: LoginService
+    , private router : Router
+    , private cookieService : CookieService) { }
+
+  createCookie(loginResponse: LoginResDTO): void{
+    if(loginResponse.jwt === "DEFAULT"){
+      this.loginSuccess = false;
+      return;
+    }
+    this.cookieService.set("tictactoe-srinivasv147-jwt"
+    , loginResponse.jwt);
+  }
 
   sendToRestApiMethod(socialUser: SocialUser){
-    this.loginResult = socialUser.firstName+" logged in";
+    this.loginService
+    .getLoginToken(socialUser)
+    .subscribe(loginResponse => {this.createCookie(loginResponse)})
+    if(this.loginSuccess){
+      this.loginResult = socialUser.firstName+" logged in";
+      this.router.navigate(['']);
+    }
+    else{
+      this.loginResult = "failed to login";
+    }
   }
 
   signInWithGoogle(): void {

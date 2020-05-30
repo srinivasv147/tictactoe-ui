@@ -6,6 +6,7 @@ import { GameComponent } from './game/game.component';
 import { HttpClientModule }    from '@angular/common/http';
 import { LoginComponent } from './login/login.component';
 import { AppRoutingModule } from './app-routing.module';
+import { CookieService } from 'ngx-cookie-service';
 
 import {
   SocialLoginModule,
@@ -29,8 +30,9 @@ import { getAuthServiceConfigs } from './socialLoginConfig';
   providers: [
     {
       provide: AuthServiceConfig,
-      useFactory: getAuthServiceConfigs
-    }
+      useFactory: getAuthServiceConfigs,
+    },
+    CookieService
   ],
   bootstrap: [AppComponent]
 })
