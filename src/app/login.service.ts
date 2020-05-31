@@ -15,7 +15,7 @@ export class LoginService {
 
   getLoginToken(socialUser: SocialUser): Observable<LoginResDTO>{
     let loginDTO: LoginDTO = {
-        token : socialUser.authToken,
+        token : socialUser.idToken,
         email : socialUser.email
     };
 

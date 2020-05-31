@@ -1,3 +1,4 @@
+//use nvm use system to use system node version.
 import { Component } from '@angular/core';
 
 @Component({

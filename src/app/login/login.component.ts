@@ -52,6 +52,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    
     this.loginResult = "no one has logged in";
   }
 
