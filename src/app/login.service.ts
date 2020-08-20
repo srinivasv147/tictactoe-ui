@@ -11,7 +11,7 @@ import { SocialUser } from "angularx-social-login";
 })
 export class LoginService {
 
-  private loginPostUrl: string="http://localhost:8080/login/";
+  private loginPostUrl: string="http://localhost:8080/authenticate";
 
   getLoginToken(socialUser: SocialUser): Observable<LoginResDTO>{
     let loginDTO: LoginDTO = {
