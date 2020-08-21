@@ -34,10 +34,13 @@ export class LoginComponent implements OnInit {
   sendToRestApiMethod(socialUser: SocialUser){
     this.loginService
     .getLoginToken(socialUser)
-    .subscribe(loginResponse => {this.createCookie(loginResponse)})
+    .subscribe(loginResponse => {
+      this.createCookie(loginResponse);
+      this.router.navigate(['']);
+    })
     if(this.loginSuccess){
       this.loginResult = socialUser.firstName+" logged in";
-      this.router.navigate(['']);
+      
     }
     else{
       this.loginResult = "failed to login";

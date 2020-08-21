@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { GameDTO } from '../game-dto';
 import { GameService } from '../game.service';
 import { DefaultGame } from '../default-game';
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-game',
@@ -47,10 +48,16 @@ export class GameComponent implements OnInit {
   getNextMove(curGameState: number[]): void{
     this.gameService
     .getGame(curGameState)
-    .subscribe(game => this.populateFields(game));
+    .subscribe(game => {
+      this.populateFields(game);
+      if(JSON.stringify(game) == JSON.stringify(DefaultGame)){
+        this.router.navigateByUrl('/login');
+      } 
+    });
   }
 
-  constructor(private gameService : GameService) { }
+  constructor(private gameService : GameService
+    , private router : Router) { }
 
   ngOnInit(): void { 
     this.runningGame = false;
