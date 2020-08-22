@@ -4,13 +4,14 @@ import { DefaultGame } from './default-game';
 import { Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
+import { environment } from "./../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameService {
 
-  private getUrl: string = "http://localhost:8080/game/";
+  private getUrl: string = environment.apiUrl + "/game/";
 
   getGame(game: number[]): Observable<GameDTO> {
     return this.http.get<GameDTO>(this.getUrl+game)

@@ -5,13 +5,14 @@ import { Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
 import { SocialUser } from "angularx-social-login";
+import { environment } from "./../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
 
-  private loginPostUrl: string="http://localhost:8080/authenticate";
+  private loginPostUrl: string = environment.apiUrl + "/authenticate";
 
   getLoginToken(socialUser: SocialUser): Observable<LoginResDTO>{
     let loginDTO: LoginDTO = {
