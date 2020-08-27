@@ -7,6 +7,8 @@ import { HttpClientModule, HTTP_INTERCEPTORS }    from '@angular/common/http';
 import { LoginComponent } from './login/login.component';
 import { AppRoutingModule } from './app-routing.module';
 import { CookieService } from 'ngx-cookie-service';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';  
 
 import {
   SocialLoginModule,
@@ -27,6 +29,8 @@ import { AuthInterceptor } from './auth.interceptor';
     HttpClientModule,
     AppRoutingModule,
     SocialLoginModule,
+    CommonModule,
+    FormsModule
   ],
   providers: [
     {

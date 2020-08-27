@@ -21,7 +21,10 @@ export class LoginService {
     };
 
     let defaultLoginRes: LoginResDTO = {
-        jwt : "DEFAULT"
+        jwt : "DEFAULT",
+        isUser : false,
+        isValidEmail : false,
+        userId : "DEFAULT"
     };
 
     return this.http.post<LoginResDTO>(this.loginPostUrl, loginDTO)
