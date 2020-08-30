@@ -49,6 +49,8 @@ export class LoginComponent implements OnInit {
     }
     this.cookieService.set("tictactoe-srinivasv147-jwt"
     , loginResponse.jwt);
+    this.cookieService.set("tictactoe-srinivasv147-user"
+    , loginResponse.userId);
   }
 
   sendToRestApiMethod(socialUser: SocialUser){
@@ -70,7 +72,6 @@ export class LoginComponent implements OnInit {
   }
 
   onUserIdSubmit(data){
-    //console.log(data.userId);
     this.createUserService
     .createUser(this.currentSocialUser, data.userId)
     .subscribe(loginResponse =>{

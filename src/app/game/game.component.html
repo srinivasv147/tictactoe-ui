@@ -9,6 +9,14 @@
         class="single-choice" type="button">
             start new game with O
         </button>
+
+        <form #challengerId = "ngForm"
+        (ngSubmit) = "sendChallenge(challengerId.value)" >
+            <input type = "text" name = "userId" 
+            placeholder = "user id to challenge" ngModel>
+            <br/>
+            <input type = "submit" value = "Challenge">
+        </form>
     </div>
     <div *ngFor="let row of [0,1,2]" class="row">
         <div 
@@ -21,5 +29,13 @@
     </div>
     <div class="Result">
         <h2>The Current Game Result is {{this.game.gameResult}}</h2>
+    </div>
+    <div class="challenges">
+        <ol>
+            <li class="challenge" 
+            *ngFor="let challenge of receivedChallenges.arr">
+                {{challenge}}
+            </li>
+        </ol>
     </div>
 </div>
