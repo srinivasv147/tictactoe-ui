@@ -8,6 +8,7 @@ import { ChallengeDTO } from '../challenge-dto';
 import { CookieService } from 'ngx-cookie-service';
 import { MessageContainer } from '../message-container';
 import { Message } from '@stomp/stompjs';
+import { stompConfig } from '../my-rx-stomp.config';
 
 @Component({
   selector: 'app-game',
@@ -22,6 +23,7 @@ export class GameComponent implements OnInit {
   playerVal: number;
   public receivedChallenges: MessageContainer<string> 
   = new MessageContainer<string>(10);
+  topicSubscription: any;
 
   setPlayer(player: number){
     this.playerVal = player;
@@ -71,6 +73,7 @@ export class GameComponent implements OnInit {
       challenger : currUserId,
       isChallengerX : true
     };
+    console.log("sending challenge");
     this.rxStompService.publish({destination: '/app/challenge'
     , body: JSON.stringify(challengeDTO)});
   }
@@ -81,11 +84,28 @@ export class GameComponent implements OnInit {
     , private cookieService : CookieService) { }
 
   ngOnInit(): void { 
+    stompConfig.connectHeaders = {
+      "Authorization" : 
+      "Bearer "+this.cookieService.get("tictactoe-srinivasv147-jwt")
+    };
+    console.log(stompConfig);
     this.runningGame = false;
     this.populateFields(DefaultGame);
-    this.rxStompService.watch('/user/topic/challenge').subscribe((message: Message) => {
-      this.receivedChallenges.insert(message.body);
-    });
+    if(this.cookieService.check("tictactoe-srinivasv147-jwt")){
+      this.rxStompService.configure(stompConfig);
+      this.rxStompService.activate();
+      this.topicSubscription = this.rxStompService.watch('/user/queue/challenge').subscribe((message: Message) => {
+        console.log(message.body)
+        this.receivedChallenges.insert(message.body);
+      });
+      console.log(this.rxStompService.connected());
+    }
+    
+  }
+
+  ngOnDestroy() {
+    if(this.cookieService.check("tictactoe-srinivasv147-jwt")) 
+      this.topicSubscription.unsubscribe();
   }
 
 }

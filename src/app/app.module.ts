@@ -11,8 +11,6 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';  
 import { InjectableRxStompConfig } from '@stomp/ng2-stompjs';
 import { RxStompService } from '@stomp/ng2-stompjs';
-import { rxStompServiceFactory } from '@stomp/ng2-stompjs';
-import { myRxStompConfig } from './my-rx-stomp.config';
 
 import {
   SocialLoginModule,
@@ -47,15 +45,7 @@ import { AuthInterceptor } from './auth.interceptor';
       useClass: AuthInterceptor,
       multi: true
     },
-    {
-      provide: InjectableRxStompConfig,
-      useValue: myRxStompConfig
-    },
-    {
-      provide: RxStompService,
-      useFactory: rxStompServiceFactory,
-      deps: [InjectableRxStompConfig]
-    }
+    RxStompService
   ],
   bootstrap: [AppComponent]
 })
