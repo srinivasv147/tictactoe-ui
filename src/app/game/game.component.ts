@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GameDTO } from '../game-dto';
 import { GameService } from '../game.service';
+import { WsTokenService } from '../ws-token.service';
 import { DefaultGame } from '../default-game';
 import { Router } from "@angular/router";
 import { RxStompService } from '@stomp/ng2-stompjs';
@@ -9,6 +10,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { MessageContainer } from '../message-container';
 import { Message } from '@stomp/stompjs';
 import { stompConfig } from '../my-rx-stomp.config';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-game',
@@ -81,24 +83,30 @@ export class GameComponent implements OnInit {
   constructor(private gameService : GameService
     , private router : Router
     , private rxStompService: RxStompService
-    , private cookieService : CookieService) { }
+    , private cookieService : CookieService
+    , private wsTokenService : WsTokenService) { }
 
   ngOnInit(): void { 
-    stompConfig.connectHeaders = {
-      "Authorization" : 
-      "Bearer "+this.cookieService.get("tictactoe-srinivasv147-jwt")
-    };
-    console.log(stompConfig);
     this.runningGame = false;
     this.populateFields(DefaultGame);
     if(this.cookieService.check("tictactoe-srinivasv147-jwt")){
-      this.rxStompService.configure(stompConfig);
-      this.rxStompService.activate();
-      this.topicSubscription = this.rxStompService.watch('/user/queue/challenge').subscribe((message: Message) => {
-        console.log(message.body)
-        this.receivedChallenges.insert(message.body);
+      this.wsTokenService.getWsToken().subscribe(tokenObject =>{
+        console.log(tokenObject+"hello");
+        if(tokenObject.jwt !== "DEFAULT"){
+          stompConfig.brokerURL 
+          = environment.wsUrl+"?token="+tokenObject.jwt;
+          console.log(stompConfig);
+          this.rxStompService.configure(stompConfig);
+          this.rxStompService.activate();
+          this.topicSubscription = this.rxStompService
+          .watch('/user/queue/challenge')
+          .subscribe((message: Message) => {
+            console.log(message.body)
+            this.receivedChallenges.insert(message.body);
+          });
+          console.log(this.rxStompService.connected());
+        }
       });
-      console.log(this.rxStompService.connected());
     }
     
   }
