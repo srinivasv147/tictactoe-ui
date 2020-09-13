@@ -1,11 +1,11 @@
 <div>
     <h2>Current Game</h2>
     <div class="choices">
-        <button (click)="setPlayer(1)" 
+        <button (click)="startOnePlayerGame(1)" 
         class="single-choice" type="button">
             start new game with X
         </button>
-        <button (click)="setPlayer(-1)" 
+        <button (click)="startOnePlayerGame(-1)" 
         class="single-choice" type="button">
             start new game with O
         </button>
@@ -35,7 +35,13 @@
         <ol>
             <li class="challenge" 
             *ngFor="let challenge of receivedChallenges.arr">
-                {{challenge}}
+                <div>
+                    <p>you have a new challenge from {{challenge.challenger}}</p>
+                    <button (click)="sendChallengeAcceptance(challenge)" 
+                        class="single-choice" type="button">
+                            accept challenge
+                    </button>
+                </div>
             </li>
         </ol>
     </div>

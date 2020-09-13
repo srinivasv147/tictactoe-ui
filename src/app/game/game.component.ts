@@ -11,6 +11,7 @@ import { MessageContainer } from '../message-container';
 import { Message } from '@stomp/stompjs';
 import { stompConfig } from '../my-rx-stomp.config';
 import { environment } from 'src/environments/environment';
+import { TwoPGameDTO } from '../two-p-game-dto';
 
 @Component({
   selector: 'app-game',
@@ -23,11 +24,15 @@ export class GameComponent implements OnInit {
   gameDisplay: string[] = [];
   runningGame: boolean;
   playerVal: number;
-  public receivedChallenges: MessageContainer<string> 
-  = new MessageContainer<string>(10);
-  topicSubscription: any;
+  public receivedChallenges: MessageContainer<ChallengeDTO> 
+  = new MessageContainer<ChallengeDTO>(10);
+  challengeSubscription: any;
+  gameSubscription: any;
+  isTwoPGame: boolean;
+  twoPGame: TwoPGameDTO;
 
-  setPlayer(player: number){
+  startOnePlayerGame(player: number){
+    this.isTwoPGame = false;
     this.playerVal = player;
     this.runningGame = true;
     this.populateFields(DefaultGame);
@@ -39,7 +44,14 @@ export class GameComponent implements OnInit {
   registerMove(move: number){
     if(this.runningGame && this.game.gameResult === "UNDECIDED"){
       this.game.gameState[move] = this.playerVal;
-      this.getNextMove(this.game.gameState);
+      if(this.isTwoPGame){
+        this.twoPGame.gameState = this.game;
+        this.rxStompService.publish({destination: '/app/game-move'
+    , body: JSON.stringify(this.twoPGame)});
+      }
+      else{
+        this.getNextMove(this.game.gameState);
+      }
     }
     if(this.game.gameResult != "UNDECIDED"){
       this.runningGame = false;
@@ -71,6 +83,7 @@ export class GameComponent implements OnInit {
     let currUserId: string 
     = this.cookieService.get("tictactoe-srinivasv147-user");
     let challengeDTO: ChallengeDTO = {
+      id : 0, 
       challengee : data.userId,
       challenger : currUserId,
       isChallengerX : true
@@ -78,6 +91,11 @@ export class GameComponent implements OnInit {
     console.log("sending challenge");
     this.rxStompService.publish({destination: '/app/challenge'
     , body: JSON.stringify(challengeDTO)});
+  }
+
+  sendChallengeAcceptance(challenge: ChallengeDTO){
+    this.rxStompService.publish({destination: '/app/accept-challenge'
+    , body: JSON.stringify(challenge)});
   }
 
   constructor(private gameService : GameService
@@ -91,20 +109,34 @@ export class GameComponent implements OnInit {
     this.populateFields(DefaultGame);
     if(this.cookieService.check("tictactoe-srinivasv147-jwt")){
       this.wsTokenService.getWsToken().subscribe(tokenObject =>{
-        console.log(tokenObject+"hello");
+        //console.log(tokenObject+"hello");
         if(tokenObject.jwt !== "DEFAULT"){
           stompConfig.brokerURL 
           = environment.wsUrl+"?token="+tokenObject.jwt;
           console.log(stompConfig);
           this.rxStompService.configure(stompConfig);
           this.rxStompService.activate();
-          this.topicSubscription = this.rxStompService
+
+          this.challengeSubscription = this.rxStompService
           .watch('/user/queue/challenge')
           .subscribe((message: Message) => {
-            console.log(message.body)
-            this.receivedChallenges.insert(message.body);
+            //console.log(message.body)
+            let challenge : ChallengeDTO = JSON.parse(message.body);
+            this.receivedChallenges.insert(challenge);
           });
-          console.log(this.rxStompService.connected());
+          
+          this.gameSubscription = this.rxStompService
+          .watch('/user/queue/game')
+          .subscribe((message: Message)=>{
+            let game : TwoPGameDTO = JSON.parse(message.body);
+            let curUser = this.cookieService.get('tictactoe-srinivasv147-user');
+            if(game.xUser === curUser) this.playerVal = 1;
+            else this.playerVal = -1;
+            this.runningGame = true;
+            this.isTwoPGame = true;
+            this.twoPGame = game;
+            this.populateFields(game.gameState);
+          });
         }
       });
     }
@@ -113,7 +145,8 @@ export class GameComponent implements OnInit {
 
   ngOnDestroy() {
     if(this.cookieService.check("tictactoe-srinivasv147-jwt")) 
-      this.topicSubscription.unsubscribe();
+      this.challengeSubscription.unsubscribe();
+      this.gameSubscription.unsubscribe();
   }
 
 }

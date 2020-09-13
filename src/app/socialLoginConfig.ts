@@ -8,7 +8,7 @@ import {
     let config = new AuthServiceConfig([
       {
         id: GoogleLoginProvider.PROVIDER_ID,
-        provider: new GoogleLoginProvider("GOOGLE_OAUTH_CLIENT_ID")
+        provider: new GoogleLoginProvider("")
       }
     ]);
   
