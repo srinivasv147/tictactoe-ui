@@ -144,9 +144,10 @@ export class GameComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    if(this.cookieService.check("tictactoe-srinivasv147-jwt")) 
+    if(this.cookieService.check("tictactoe-srinivasv147-jwt")) {
       this.challengeSubscription.unsubscribe();
       this.gameSubscription.unsubscribe();
+    }
   }
 
 }
